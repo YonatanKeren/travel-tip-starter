@@ -314,3 +314,46 @@ function cleanStats(stats) {
     }, [])
     return cleanedStats
 }
+
+function showThemeModal(currentColor = '#ffffff') {
+    return new Promise((resolve, reject) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+
+        modal.innerHTML = `
+            <div class="modal-content">
+                <p>Select background color:</p>
+                <input type="color" id="colorPicker" value="${currentColor}" />
+                <br><br>
+                <button id="themeOkBtn">OK</button>
+                <button id="themeCancelBtn">Cancel</button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById('themeOkBtn').onclick = () => {
+            const color = document.getElementById('colorPicker').value;
+            modal.remove();
+            resolve(color);
+        };
+
+        document.getElementById('themeCancelBtn').onclick = () => {
+            modal.remove();
+            reject();
+        };
+    });
+}
+
+document.getElementById('themeBtn').addEventListener('click', () => {
+    const current = localStorage.getItem('bgColor') || '#f5f5f5';
+    showThemeModal(current)
+        .then(newColor => {
+            document.body.style.backgroundColor = newColor;
+            localStorage.setItem('bgColor', newColor);
+        })
+        .catch(() => {
+            console.log('Theme change cancelled');
+        });
+});
+
