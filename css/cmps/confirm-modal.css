@@ -1,0 +1,33 @@
+.confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.confirm-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+.confirm-modal-content button {
+    margin: 0 20px;
+}
+
+.confirm-modal p {
+    margin-inline: 0;
+    margin-block: 10px 30px;
+    color: black;
+}
+
+.hidden {
+    display: none;
+}
+
