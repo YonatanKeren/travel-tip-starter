@@ -30,7 +30,8 @@ export const locService = {
     save,
     setFilterBy,
     setSortBy,
-    getLocCountByRateMap
+    getLocCountByRateMap,
+    getLocsLatLng
 }
 
 function query() {
@@ -154,6 +155,17 @@ function _createLoc(loc) {
     loc.id = utilService.makeId()
     loc.createdAt = loc.updatedAt = utilService.randomPastTime()
     return loc
+}
+
+function getLocsLatLng(userPos) {
+    document.querySelectorAll('li.loc').forEach(li => {
+        const locLat = parseFloat(li.getAttribute('loc-lat'));
+        const locLng = parseFloat(li.getAttribute('loc-lng'));
+        const locPos = { lat: locLat, lng: locLng };
+        const distance = utilService.getDistance(userPos, locPos, 'K')
+        li.querySelector('.distance-from-user').innerText = `Distance: ${distance} km`
+    })
+    
 }
 
 

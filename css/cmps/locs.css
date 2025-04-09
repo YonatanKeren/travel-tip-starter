@@ -82,3 +82,9 @@
     height: 1em;
     margin-inline-end: 0.3em;
 }
+
+.loc h4 span:nth-child(2n) {
+    font-size: 0.7em;
+    display: flex;
+    align-items: center;
+}
