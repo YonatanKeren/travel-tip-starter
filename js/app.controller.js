@@ -16,6 +16,8 @@ window.app = {
     onShareLoc,
     onSetSortBy,
     onSetFilterBy,
+    showConfirmModal,
+    hideConfirmModal
 }
 
 function onInit() {
@@ -50,7 +52,7 @@ function renderLocs(locs) {
                 : ''}
             </p>
             <div class="loc-btns">     
-               <button title="Delete" onclick="app.onRemoveLoc('${loc.id}')">🗑️</button>
+               <button title="Delete" onclick="app.showConfirmModal('${loc.id}')">🗑️</button>
                <button title="Edit" onclick="app.onUpdateLoc('${loc.id}')">✏️</button>
                <button title="Select" onclick="app.onSelectLoc('${loc.id}')">🗺️</button>
             </div>     
@@ -69,16 +71,31 @@ function renderLocs(locs) {
 }
 
 function onRemoveLoc(locId) {
-    locService.remove(locId)
-        .then(() => {
-            flashMsg('Location removed')
-            unDisplayLoc()
-            loadAndRenderLocs()
-        })
-        .catch(err => {
-            console.error('OOPs:', err)
-            flashMsg('Cannot remove location')
-        })
+        locService.remove(locId)
+            .then(() => {
+                flashMsg('Location removed')
+                unDisplayLoc()
+                loadAndRenderLocs()
+            })
+            .catch(err => {
+                console.error('OOPs:', err)
+                flashMsg('Cannot remove location')
+            })
+            hideConfirmModal()
+    }
+
+function showConfirmModal(locId) {
+    const elModal = document.querySelector('.confirm-modal')
+    elModal.classList.remove('hidden')
+    const elConfirmButton = document.querySelector('.confirm-modal-yes')
+    elConfirmButton.addEventListener('click', () => {
+        onRemoveLoc(locId);
+      });
+}
+
+function hideConfirmModal() {
+    const elModal = document.querySelector('.confirm-modal')
+    elModal.classList.add('hidden')
 }
 
 function onSearchAddress(ev) {
@@ -223,7 +240,7 @@ function getFilterByFromQueryParams() {
     const queryParams = new URLSearchParams(window.location.search)
     const txt = queryParams.get('txt') || ''
     const minRate = queryParams.get('minRate') || 0
-    locService.setFilterBy({txt, minRate})
+    locService.setFilterBy({ txt, minRate })
 
     document.querySelector('input[name="filter-by-txt"]').value = txt
     document.querySelector('input[name="filter-by-rate"]').value = minRate
