@@ -112,24 +112,27 @@ function onSearchAddress(ev) {
 }
 
 function onAddLoc(geo) {
-    const locName = prompt('Loc name', geo.address || 'Just a place')
-    if (!locName) return
-
-    const loc = {
-        name: locName,
-        rate: +prompt(`Rate (1-5)`, '3'),
-        geo
-    }
-    locService.save(loc)
-        .then((savedLoc) => {
-            flashMsg(`Added Location (id: ${savedLoc.id})`)
-            utilService.updateQueryParams({ locId: savedLoc.id })
-            loadAndRenderLocs()
+    showLocModal(geo.address || 'Just a place', 3)
+        .then(({ name, rate }) => {
+            const loc = {
+                name,
+                rate: +rate,
+                geo
+            };
+            locService.save(loc)
+                .then((savedLoc) => {
+                    flashMsg(`Added Location (id: ${savedLoc.id})`);
+                    utilService.updateQueryParams({ locId: savedLoc.id });
+                    loadAndRenderLocs();
+                })
+                .catch(err => {
+                    console.error('OOPs:', err);
+                    flashMsg('Cannot add location');
+                });
         })
-        .catch(err => {
-            console.error('OOPs:', err)
-            flashMsg('Cannot add location')
-        })
+        .catch(() => {
+            console.log('Location addition cancelled');
+        });
 }
 
 function loadAndRenderLocs() {
@@ -158,21 +161,20 @@ function onPanToUserPos() {
 function onUpdateLoc(locId) {
     locService.getById(locId)
         .then(loc => {
-            const rate = prompt('New rate?', loc.rate)
-            if (rate && rate !== loc.rate) {
-                loc.rate = rate
-                locService.save(loc)
-                    .then(savedLoc => {
-                        flashMsg(`Rate was set to: ${savedLoc.rate}`)
-                        loadAndRenderLocs()
-                    })
-                    .catch(err => {
-                        console.error('OOPs:', err)
-                        flashMsg('Cannot update location')
-                    })
-
-            }
+            return showLocModal(loc.name, loc.rate).then(updatedData => {
+                loc.name = updatedData.name;
+                loc.rate = +updatedData.rate;
+                return locService.save(loc);
+            });
         })
+        .then(savedLoc => {
+            flashMsg(`Location updated: ${savedLoc.name} with rate ${savedLoc.rate}`);
+            loadAndRenderLocs();
+        })
+        .catch(err => {
+            console.error('OOPs:', err);
+            flashMsg('Cannot update location');
+        });
 }
 
 function onSelectLoc(locId) {
@@ -374,3 +376,38 @@ document.getElementById('themeBtn').addEventListener('click', () => {
         });
 });
 
+function showLocModal(name = '', rate = 3) {
+    return new Promise((resolve, reject) => {
+        const modal = document.createElement('dialog');
+        modal.className = 'modal';
+
+        modal.innerHTML = `
+            <div class="modal-content">
+                <p>Location Name:</p>
+                <input type="text" id="locName" value="${name}" />
+                <p>Rate (1-5):</p>
+                <input type="number" id="locRate" value="${rate}" min="1" max="5" />
+                <br><br>
+                <button id="locOkBtn">OK</button>
+                <button id="locCancelBtn">Cancel</button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        modal.showModal();
+
+        document.getElementById('locOkBtn').onclick = () => {
+            const locName = document.getElementById('locName').value;
+            const locRate = document.getElementById('locRate').value;
+            modal.close();
+            modal.remove();
+            resolve({ name: locName, rate: locRate });
+        };
+
+        document.getElementById('locCancelBtn').onclick = () => {
+            modal.close();
+            modal.remove();
+            reject();
+        };
+    });
+}
