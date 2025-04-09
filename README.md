@@ -78,7 +78,9 @@ window.app = {
     onCopyLoc,
     onShareLoc,
     onSetSortBy,
-    onSetFilterBy
+    onSetFilterBy,
+    showConfirmModal,
+    hideConfirmModal
 }
 ```
 
