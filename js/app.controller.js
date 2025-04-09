@@ -282,6 +282,9 @@ function renderLocStats() {
     locService.getLocCountByRateMap().then(stats => {
         handleStats(stats, 'loc-stats-rate')
     })
+    locService.getLocCountByUpdatedMap().then(stats => {
+        handleStats(stats, 'loc-stats-update')
+    })
 }
 
 function handleStats(stats, selector) {
@@ -336,8 +339,8 @@ function cleanStats(stats) {
 
 function showThemeModal(currentColor = '#ffffff') {
     return new Promise((resolve, reject) => {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
+        const modal = document.createElement('div')
+        modal.className = 'modal'
 
         modal.innerHTML = `
             <div class="modal-content">
@@ -349,37 +352,37 @@ function showThemeModal(currentColor = '#ffffff') {
             </div>
         `;
 
-        document.body.appendChild(modal);
+        document.body.appendChild(modal)
 
         document.getElementById('themeOkBtn').onclick = () => {
-            const color = document.getElementById('colorPicker').value;
-            modal.remove();
-            resolve(color);
+            const color = document.getElementById('colorPicker').value
+            modal.remove()
+            resolve(color)
         };
 
         document.getElementById('themeCancelBtn').onclick = () => {
-            modal.remove();
-            reject();
+            modal.remove()
+            reject()
         };
     });
 }
 
 document.getElementById('themeBtn').addEventListener('click', () => {
-    const current = localStorage.getItem('bgColor') || '#f5f5f5';
+    const current = localStorage.getItem('bgColor') || '#f5f5f5'
     showThemeModal(current)
         .then(newColor => {
-            document.body.style.backgroundColor = newColor;
-            localStorage.setItem('bgColor', newColor);
+            document.body.style.backgroundColor = newColor
+            localStorage.setItem('bgColor', newColor)
         })
         .catch(() => {
-            console.log('Theme change cancelled');
+            console.log('Theme change cancelled')
         });
 });
 
 function showLocModal(name = '', rate = 3) {
     return new Promise((resolve, reject) => {
-        const modal = document.createElement('dialog');
-        modal.className = 'modal';
+        const modal = document.createElement('dialog')
+        modal.className = 'modal'
 
         modal.innerHTML = `
             <div class="modal-content">
@@ -393,21 +396,21 @@ function showLocModal(name = '', rate = 3) {
             </div>
         `;
 
-        document.body.appendChild(modal);
-        modal.showModal();
+        document.body.appendChild(modal)
+        modal.showModal()
 
         document.getElementById('locOkBtn').onclick = () => {
-            const locName = document.getElementById('locName').value;
-            const locRate = document.getElementById('locRate').value;
-            modal.close();
-            modal.remove();
-            resolve({ name: locName, rate: locRate });
+            const locName = document.getElementById('locName').value
+            const locRate = document.getElementById('locRate').value
+            modal.close()
+            modal.remove()
+            resolve({ name: locName, rate: locRate })
         };
 
         document.getElementById('locCancelBtn').onclick = () => {
-            modal.close();
-            modal.remove();
-            reject();
-        };
-    });
+            modal.close()
+            modal.remove()
+            reject()
+        }
+    })
 }
