@@ -40,9 +40,10 @@ function renderLocs(locs) {
     var strHTML = locs.map(loc => {
         const className = (loc.id === selectedLocId) ? 'active' : ''
         return `
-        <li class="loc ${className}" data-id="${loc.id}">
+        <li class="loc ${className}" data-id="${loc.id}" loc-lat="${loc.geo.lng}" loc-lng="${loc.geo.lng}">
             <h4>  
                 <span>${loc.name}</span>
+                <span class="distance-from-user"></span>
                 <span title="${loc.rate} stars">${'★'.repeat(loc.rate)}</span>
             </h4>
             <p class="muted">
@@ -150,6 +151,9 @@ function onPanToUserPos() {
             mapService.panTo({ ...latLng, zoom: 15 })
             unDisplayLoc()
             loadAndRenderLocs()
+            setTimeout(() => {
+                locService.getLocsLatLng(latLng);
+            }, 10);     
             flashMsg(`You are at Latitude: ${latLng.lat} Longitude: ${latLng.lng}`)
         })
         .catch(err => {
