@@ -31,7 +31,8 @@ export const locService = {
     setFilterBy,
     setSortBy,
     getLocCountByRateMap,
-    getLocCountByUpdatedMap
+    getLocCountByUpdatedMap,
+    getLocsLatLng
 }
 
 function query() {
